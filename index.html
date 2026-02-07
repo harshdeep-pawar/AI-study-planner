@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Study OS v2.0 - Advanced Engineering Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- For Module 10 Analytics -->
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 1rem;
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen pb-20">
+
+    <!-- Navbar -->
+    <nav class="border-b border-gray-800 bg-slate-900/50 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🧠</span>
+                <h1 class="text-xl font-bold tracking-tight">AI Study <span class="gradient-text">OS v2.0</span></h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div
+                    class="hidden md:flex items-center space-x-2 text-xs font-mono text-emerald-400 bg-emerald-900/20 px-3 py-1 rounded-full">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span>SYSTEM ONLINE</span>
+                </div>
+                <!-- Procrastination Alert (Module 6) -->
+                <div id="procrastination-alert"
+                    class="hidden items-center space-x-2 text-xs font-mono text-amber-400 bg-amber-900/20 px-3 py-1 rounded-full animate-bounce">
+                    <span>⚠️ FOCUS DIP DETECTED</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- LEFT: Setup & Controls -->
+        <div class="lg:col-span-4 space-y-6">
+
+            <!-- Daily Mission Card (Module 3) -->
+            <div id="mission-card" class="hidden glass-panel p-6 border-l-4 border-indigo-500 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">🚀</div>
+                <h2 class="text-sm font-bold text-indigo-400 uppercase tracking-wider mb-1">Today's Mission</h2>
+                <h3 id="mission-theme" class="text-2xl font-bold text-white mb-4">Deep Dive Protocol</h3>
+
+                <div id="mission-tasks" class="space-y-3 mb-6">
+                    <!-- Tasks injected by JS -->
+                </div>
+
+                <div class="mt-4 p-3 bg-indigo-900/30 rounded-lg text-xs text-indigo-200 flex items-start space-x-2">
+                    <span>💡</span>
+                    <p id="mission-tip">AI Tip: Optimization running...</p>
+                </div>
+
+                <button onclick="startSession()"
+                    class="mt-4 w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition shadow-lg shadow-indigo-500/20">
+                    ▶ Start Focus Session
+                </button>
+            </div>
+
+            <!-- Setup Form -->
+            <div id="setup-panel" class="glass-panel p-6">
+                <h2 class="text-lg font-semibold mb-4 flex items-center">
+                    <span class="mr-2">⚙️</span> Configuration
+                </h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase font-bold">Name</label>
+                        <input type="text" id="studentName" placeholder="Enter Name"
+                            oninput="updateProfile('name', this.value)"
+                            class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase font-bold">College</label>
+                        <input type="text" id="college" placeholder="Institute Name"
+                            oninput="updateProfile('college', this.value)"
+                            class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs text-gray-400 uppercase font-bold">Branch</label>
+                            <input type="text" id="branch" placeholder="e.g. CS"
+                                oninput="updateProfile('branch', this.value)"
+                                class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 uppercase font-bold">Grad Year</label>
+                            <input type="number" id="year" placeholder="2026"
+                                oninput="updateProfile('year', parseInt(this.value))"
+                                class="w-full bg-slate-800 border border-slate-700 rounded p-2 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                        </div>
+                    </div>
+
+                    <!-- Subjects List -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-xs text-gray-400 uppercase font-bold">Subjects (Auto-Topic Gen)</label>
+                            <button onclick="addSubjectRow()"
+                                class="text-xs bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded transition">+
+                                Add</button>
+                        </div>
+                        <div id="subjects-container" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                            <!-- Rows injected -->
+                        </div>
+                    </div>
+
+                    <button onclick="runAIEngine()" id="generateBtn"
+                        class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition shadow-lg shadow-emerald-500/20">
+                        ⚡ Initialize AI Core
+                    </button>
+                </div>
+            </div>
+
+            <!-- Real-time Event Simulation (Module 2) -->
+            <div id="sim-controls" class="hidden glass-panel p-6 border border-slate-700">
+                <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Simulation Events</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="simEvent('missed')"
+                        class="p-2 bg-red-900/30 hover:bg-red-900/50 text-red-300 text-xs rounded border border-red-800 transition">
+                        Wait, I Missed It ❌
+                    </button>
+                    <button onclick="simEvent('aced')"
+                        class="p-2 bg-green-900/30 hover:bg-green-900/50 text-green-300 text-xs rounded border border-green-800 transition">
+                        I Aced the Quiz 🏆
+                    </button>
+                    <button onclick="simEvent('distracted')"
+                        class="p-2 bg-yellow-900/30 hover:bg-yellow-900/50 text-yellow-300 text-xs rounded border border-yellow-800 transition col-span-2">
+                        Detect Procrastination (mock) 💤
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: Dashboard -->
+        <div class="lg:col-span-8 space-y-6">
+
+            <!-- Loading Overlay -->
+            <div id="ai-loading"
+                class="hidden flex flex-col items-center justify-center py-20 text-center animate-pulse">
+                <div class="text-4xl mb-4">🧬</div>
+                <h3 class="text-xl font-bold text-white mb-2">Constructing Knowledge Graph...</h3>
+                <p class="text-slate-400 text-sm">Mapping dependencies • Calculating cognitive weights • Predicting
+                    fatigue</p>
+            </div>
+
+            <!-- Main Dashboard Content -->
+            <div id="dashboard-content" class="hidden space-y-6">
+
+                <!-- Analytics Row (Module 10 & 4) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Dependency Graph Viz (Module 5) -->
+                    <div class="glass-panel p-6 min-h-[250px]">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase mb-4">Dependency Knowledge Graph</h3>
+                        <div id="graph-viz" class="flex flex-wrap gap-2 text-xs text-slate-500">
+                            <!-- Simple nodes viz -->
+                        </div>
+                        <canvas id="dependencyChart" class="mt-2"></canvas>
+                    </div>
+
+                    <!-- Confidence Trend (Module 4) -->
+                    <div class="glass-panel p-6">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase mb-4">Projected Confidence Growth</h3>
+                        <canvas id="confidenceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Strategic Timeline -->
+                <div class="glass-panel p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold text-white">📅 Strategic Timeline</h3>
+                        <span class="text-xs bg-slate-800 px-2 py-1 rounded text-slate-400">Auto-Adapting</span>
+                    </div>
+
+                    <div id="timeline-feed" class="space-y-4 relative border-l border-slate-700 ml-4 pl-8">
+                        <!-- Timeline Items Injected -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/static/ai_core.js"></script>
+</body>
+
+</html>
